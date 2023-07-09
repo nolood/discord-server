@@ -25,10 +25,12 @@ export class User extends Model<User> {
   password: string;
   @Column({
     type: DataType.ARRAY(DataType.INTEGER),
+    defaultValue: [],
   })
   friends: number[];
   @Column({
-    type: DataType.ARRAY,
+    type: DataType.ARRAY(DataType.STRING),
+    defaultValue: [],
   })
   roles: string[];
   @Column({
@@ -37,10 +39,12 @@ export class User extends Model<User> {
   avatar: string;
   @Column({
     type: DataType.ARRAY(DataType.INTEGER),
+    defaultValue: [],
   })
   servers: number[];
   @Column({
     type: DataType.ARRAY(DataType.INTEGER),
+    defaultValue: [],
   })
   channels: number[];
 }

@@ -1,7 +1,7 @@
 import { Model, Table, DataType, Column } from 'sequelize-typescript';
 
 @Table({ tableName: 'channels' })
-export class VoiceChannels extends Model<VoiceChannels> {
+export class Channels extends Model<Channels> {
   @Column({
     type: DataType.INTEGER,
     unique: true,
@@ -15,6 +15,7 @@ export class VoiceChannels extends Model<VoiceChannels> {
   users: number[];
   @Column({
     type: DataType.ARRAY(DataType.JSON),
+    defaultValue: [],
   })
   messages: Array<{ user: number; message: string; date: string }>;
 }
