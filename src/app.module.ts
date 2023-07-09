@@ -6,6 +6,11 @@ import { ServersModule } from './servers/servers.module';
 import { TextChannelsModule } from './text-channels/text-channels.module';
 import { VoiceChannelsModule } from './voice-channels/voice-channels.module';
 import { ChannelsModule } from './channels/channels.module';
+import { User } from './users/users.model';
+import { Server } from './servers/servers.model';
+import { Channel } from './channels/channels.model';
+import { TextChannel } from './text-channels/text-channels.model';
+import { VoiceChannel } from './voice-channels/voice-channels.model';
 
 @Module({
   imports: [
@@ -19,7 +24,7 @@ import { ChannelsModule } from './channels/channels.module';
       username: process.env.POSTGRES_USERNAME,
       password: String(process.env.POSTGRES_PASSWORD),
       database: process.env.POSTGRES_DB,
-      models: [],
+      models: [User, TextChannel, VoiceChannel, Channel, Server],
       autoLoadModels: true,
     }),
     UsersModule,

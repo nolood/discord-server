@@ -47,4 +47,9 @@ export class User extends Model<User> {
     defaultValue: [],
   })
   channels: number[];
+  @Column({
+    type: DataType.ARRAY(DataType.JSON),
+    defaultValue: [],
+  })
+  requests: Array<{ senderId: number; senderNick: string }>;
 }

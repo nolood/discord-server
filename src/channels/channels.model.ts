@@ -1,7 +1,7 @@
 import { Model, Table, DataType, Column } from 'sequelize-typescript';
 
 @Table({ tableName: 'channels' })
-export class Channels extends Model<Channels> {
+export class Channel extends Model<Channel> {
   @Column({
     type: DataType.INTEGER,
     unique: true,
