@@ -1,8 +1,11 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { ConfigModule } from '@nestjs/config';
+import { UsersModule } from './users/users.module';
+import { ServersModule } from './servers/servers.module';
+import { TextChannelsModule } from './text-channels/text-channels.module';
+import { VoiceChannelsModule } from './voice-channels/voice-channels.module';
+import { ChannelsModule } from './channels/channels.module';
 
 @Module({
   imports: [
@@ -19,9 +22,14 @@ import { ConfigModule } from '@nestjs/config';
       models: [],
       autoLoadModels: true,
     }),
+    UsersModule,
+    ServersModule,
+    TextChannelsModule,
+    VoiceChannelsModule,
+    ChannelsModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
   exports: [],
 })
 export class AppModule {}
