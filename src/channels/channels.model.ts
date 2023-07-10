@@ -17,5 +17,5 @@ export class Channel extends Model<Channel> {
     type: DataType.ARRAY(DataType.JSON),
     defaultValue: [],
   })
-  messages: Array<{ user: number; message: string; date: string }>;
+  messages: Array<{ user: number; message: string; date: string; id: string }>;
 }
