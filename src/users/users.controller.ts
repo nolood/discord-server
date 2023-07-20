@@ -9,6 +9,8 @@ import { AcceptOrDismissFriendResponse } from './responses/AcceptOrDismissFriend
 import { GetUsersByNickname } from './dto/get-users-by-nickname.dto';
 import { DeleteFriendRequest } from './dto/delete-friend-req.dto';
 import { DeleteFriendResponse } from './responses/DeleteFriendResponse';
+import { RegistrationDto } from './dto/registration.dto';
+import { LoginDto } from './dto/login.dto';
 
 @ApiTags('Действия с пользователями')
 @Controller('users')
@@ -59,5 +61,19 @@ export class UsersController {
   @Post('deletefriendreq')
   deleteFriendRequest(@Body() userDto: DeleteFriendRequest) {
     return this.usersService.deleteFriendRequest(userDto);
+  }
+
+  @ApiOperation({ summary: 'Зарегистрироваться' })
+  @ApiResponse({ status: 200, type: RegistrationDto })
+  @Post('registration')
+  registration(@Body() userDto: RegistrationDto) {
+    return this.usersService.registration(userDto);
+  }
+
+  @ApiOperation({ summary: 'Войти' })
+  @ApiResponse({ status: 200, type: LoginDto })
+  @Post('login')
+  login(@Body() userDto: LoginDto) {
+    return this.usersService.login(userDto);
   }
 }

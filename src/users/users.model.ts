@@ -42,7 +42,7 @@ export class User extends Model<User> {
   @ApiProperty({ example: ['USER', 'ADMIN'], description: 'Массив ролей' })
   @Column({
     type: DataType.ARRAY(DataType.STRING),
-    defaultValue: [],
+    defaultValue: ['USER'],
   })
   roles: string[];
 
@@ -78,4 +78,14 @@ export class User extends Model<User> {
     defaultValue: [],
   })
   requests: Array<{ senderId: number; senderNick: string }>;
+
+  @ApiProperty({
+    example: [1, 2, 3],
+    description: 'Массив с id заблокированных пользователей',
+  })
+  @Column({
+    type: DataType.ARRAY(DataType.INTEGER),
+    defaultValue: [],
+  })
+  blockedUsers: number[];
 }

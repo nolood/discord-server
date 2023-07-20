@@ -7,6 +7,9 @@ import { AcceptOrDismissFriendRequest } from './dto/accept-or-dismiss-friend-req
 import { GetUsersByNickname } from './dto/get-users-by-nickname.dto';
 import { Op } from 'sequelize';
 import { DeleteFriendRequest } from './dto/delete-friend-req.dto';
+import { RegistrationDto } from './dto/registration.dto';
+import { LoginDto } from './dto/login.dto';
+import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class UsersService {
@@ -92,5 +95,58 @@ export class UsersService {
     user.update({ friends: updatedUserFriends });
     friend.update({ friends: updatedFriendFriends });
     return { friend, user };
+  }
+
+  async registration(dto: RegistrationDto) {
+    const { email, password, nickname } = dto;
+    const candidateEmail = await this.userRepository.findOne({
+      where: { email },
+    });
+    const candidateNickname = await this.userRepository.findOne({
+      where: { nickname },
+    });
+
+    if (candidateNickname) {
+      return { message: `Пользователь с ником ${nickname} уже существует` };
+    }
+
+    if (candidateEmail) {
+      return { message: `Пользователь с email ${email} уже существует` };
+    }
+
+    // const hashPassword = bcrypt.hash(password, 3); ??? FIXME
+
+    const user = await this.userRepository.create({
+      email,
+      nickname,
+      password,
+    });
+
+    const jsonwebtoken = jwt.sign(
+      { id: user.id, email },
+      process.env.JWT_ACCESS_SECRET,
+      { expiresIn: '48h' },
+    );
+
+    return jsonwebtoken;
+  }
+
+  async login(dto: LoginDto) {
+    const { email, password } = dto;
+    const user = await this.userRepository.findOne({ where: { email } });
+    if (!user) {
+      return { message: 'Такого пользователя не существует' };
+    }
+    if (password !== user.password) {
+      return { message: 'Указан неверный пароль' };
+    }
+
+    const token = jwt.sign(
+      { id: user.id, email },
+      process.env.JWT_ACCESS_SECRET,
+      { expiresIn: '48h' },
+    );
+
+    return token;
   }
 }
