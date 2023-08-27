@@ -10,6 +10,8 @@ import { DeleteFriendRequest } from './dto/delete-friend-req.dto';
 import { RegistrationDto } from './dto/registration.dto';
 import { LoginDto } from './dto/login.dto';
 import * as jwt from 'jsonwebtoken';
+import * as bcrypt from 'bcrypt';
+import { SetStatus } from './dto/set-status.dto';
 
 @Injectable()
 export class UsersService {
@@ -97,6 +99,24 @@ export class UsersService {
     return { friend, user };
   }
 
+  async setStatus(dto: SetStatus) {
+    const { userId, status } = dto;
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    user.update({ status });
+    return { user };
+  }
+
+  generateTokens(payload) {
+    const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET, {
+      expiresIn: '24h',
+    });
+    const refreshToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET, {
+      expiresIn: '30d',
+    });
+
+    return { accessToken, refreshToken };
+  }
+
   async registration(dto: RegistrationDto) {
     const { email, password, nickname } = dto;
     const candidateEmail = await this.userRepository.findOne({
@@ -107,46 +127,55 @@ export class UsersService {
     });
 
     if (candidateNickname) {
-      return { message: `Пользователь с ником ${nickname} уже существует` };
+      return {
+        message: `Пользователь с ником ${nickname} уже существует`,
+        type: 'error',
+      };
     }
 
     if (candidateEmail) {
-      return { message: `Пользователь с email ${email} уже существует` };
+      return {
+        message: `Пользователь с email ${email} уже существует`,
+        type: 'error',
+      };
     }
 
-    // const hashPassword = bcrypt.hash(password, 3); ??? FIXME
+    const hashPassword = await bcrypt.hash(password, 3);
 
     const user = await this.userRepository.create({
       email,
       nickname,
-      password,
+      password: hashPassword,
     });
 
-    const jsonwebtoken = jwt.sign(
-      { id: user.id, email },
-      process.env.JWT_ACCESS_SECRET,
-      { expiresIn: '48h' },
-    );
+    const { accessToken, refreshToken } = this.generateTokens({
+      id: user.id,
+      email,
+      nickname,
+    });
 
-    return jsonwebtoken;
+    await user.update({ refreshToken });
+    return { message: accessToken, type: 'success' };
   }
 
   async login(dto: LoginDto) {
     const { email, password } = dto;
     const user = await this.userRepository.findOne({ where: { email } });
     if (!user) {
-      return { message: 'Такого пользователя не существует' };
+      return { message: 'Такого пользователя не существует', type: 'error' };
     }
-    if (password !== user.password) {
-      return { message: 'Указан неверный пароль' };
+    const isPassEquals = await bcrypt.compare(password, user.password);
+    if (!isPassEquals) {
+      return { message: 'Указан неверный пароль', type: 'error' };
     }
 
-    const token = jwt.sign(
-      { id: user.id, email },
-      process.env.JWT_ACCESS_SECRET,
-      { expiresIn: '48h' },
-    );
+    const { accessToken, refreshToken } = this.generateTokens({
+      id: user.id,
+      email: user.email,
+      nickname: user.nickname,
+    });
 
-    return token;
+    await user.update({ refreshToken: refreshToken });
+    return { type: 'success', message: accessToken };
   }
 }

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Model, Table, DataType, Column } from 'sequelize-typescript';
+import { Column, DataType, Model, Table } from 'sequelize-typescript';
 
 @Table({ tableName: 'users' })
 export class User extends Model<User> {
@@ -88,4 +88,22 @@ export class User extends Model<User> {
     defaultValue: [],
   })
   blockedUsers: number[];
+
+  @ApiProperty({
+    example: 'adsda3234asdasda',
+    description: 'Рефреш токен',
+  })
+  @Column({
+    type: DataType.STRING,
+  })
+  refreshToken: string;
+  @ApiProperty({
+    example: 'online',
+    description: 'online | offline | invisible | inactive | disturb',
+  })
+  @Column({
+    type: DataType.STRING,
+    defaultValue: 'offline',
+  })
+  status: string;
 }
