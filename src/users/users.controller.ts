@@ -1,9 +1,8 @@
-import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Req, Res } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AcceptOrDismissFriendRequest } from './dto/accept-or-dismiss-friend-request.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { DeleteFriendRequest } from './dto/delete-friend-req.dto';
-import { GetUsersByNickname } from './dto/get-users-by-nickname.dto';
 import { LoginDto } from './dto/login.dto';
 import { RegistrationDto } from './dto/registration.dto';
 import { SendFriendRequest } from './dto/send-friend-request.dto';
@@ -28,8 +27,8 @@ export class UsersController {
   @ApiOperation({ summary: 'Получение всех пользователей' })
   @ApiResponse({ status: 200, type: [User] })
   @Get()
-  getAll(@Body() searchDto: GetUsersByNickname) {
-    return this.usersService.getAllUsers(searchDto);
+  getAll(@Query('nickname') nickname: string) {
+    return this.usersService.getAllUsers(nickname);
   }
 
   @ApiOperation({ summary: 'Отправить заявку в друзья' })

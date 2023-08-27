@@ -1,17 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { User } from './users.model';
 import { InjectModel } from '@nestjs/sequelize';
-import { CreateUserDto } from './dto/create-user.dto';
-import { SendFriendRequest } from './dto/send-friend-request.dto';
-import { AcceptOrDismissFriendRequest } from './dto/accept-or-dismiss-friend-request.dto';
-import { GetUsersByNickname } from './dto/get-users-by-nickname.dto';
-import { Op } from 'sequelize';
-import { DeleteFriendRequest } from './dto/delete-friend-req.dto';
-import { RegistrationDto } from './dto/registration.dto';
-import { LoginDto } from './dto/login.dto';
-import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt';
+import * as jwt from 'jsonwebtoken';
+import { Op } from 'sequelize';
+import { AcceptOrDismissFriendRequest } from './dto/accept-or-dismiss-friend-request.dto';
+import { CreateUserDto } from './dto/create-user.dto';
+import { DeleteFriendRequest } from './dto/delete-friend-req.dto';
+import { LoginDto } from './dto/login.dto';
+import { RegistrationDto } from './dto/registration.dto';
+import { SendFriendRequest } from './dto/send-friend-request.dto';
 import { SetStatus } from './dto/set-status.dto';
+import { User } from './users.model';
 
 @Injectable()
 export class UsersService {
@@ -21,8 +20,8 @@ export class UsersService {
     return user;
   }
 
-  async getAllUsers(dto: GetUsersByNickname) {
-    const { value } = dto;
+  async getAllUsers(dto: string) {
+    const value = dto;
     let users;
     if (!value) {
       users = await this.userRepository.findAll();
@@ -155,7 +154,7 @@ export class UsersService {
     });
 
     await user.update({ refreshToken });
-    return { message: accessToken, type: 'success' };
+    return { message: accessToken, type: 'success', user };
   }
 
   async login(dto: LoginDto) {
@@ -176,6 +175,6 @@ export class UsersService {
     });
 
     await user.update({ refreshToken: refreshToken });
-    return { type: 'success', message: accessToken };
+    return { type: 'success', message: accessToken, user };
   }
 }
